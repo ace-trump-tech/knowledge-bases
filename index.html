@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📚 knowledge-bases · ace-trump-tech</title>
+<meta name="description" content="Curated AI / Robotics / Research Knowledge Bases — 650+ papers · 87+ deep reviews · dark futuristic landing page.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+<style>
+:root {
+  --bg: #0d1117;
+  --bg-2: #010409;
+  --bg-3: #161b22;
+  --fg: #c9d1d9;
+  --fg-muted: #6e7681;
+  --cyan: #00ffff;
+  --magenta: #ff00ff;
+  --green: #39ff14;
+  --blue: #58a6ff;
+  --orange: #ffa657;
+  --yellow: #f0db4f;
+  --border: #30363d;
+  --border-bright: #444c56;
+  --shadow: 0 4px 30px rgba(0, 255, 255, 0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'SF Mono', Consolas, Monaco, 'Courier New', monospace;
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.65;
+  min-height: 100vh;
+  background-image:
+    radial-gradient(ellipse at top left, rgba(0, 255, 255, 0.06), transparent 50%),
+    radial-gradient(ellipse at bottom right, rgba(255, 0, 255, 0.06), transparent 50%),
+    linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 100%);
+  background-attachment: fixed;
+}
+
+/* Subtle scanline overlay for cyber feel */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(255, 255, 255, 0.015) 2px,
+    rgba(255, 255, 255, 0.015) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.wrap { max-width: 1280px; margin: 0 auto; padding: 3rem 2rem; position: relative; z-index: 2; }
+
+/* ───── HERO ───── */
+.hero { text-align: center; margin-bottom: 4rem; padding: 2rem 0; position: relative; }
+
+.hero::before {
+  content: '> SYSTEM_BOOT';
+  position: absolute;
+  top: -1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  color: var(--green);
+  letter-spacing: 0.3em;
+  background: var(--bg);
+  padding: 0 1rem;
+}
+
+.hero pre {
+  font-family: inherit;
+  font-size: clamp(0.55rem, 1.2vw, 0.85rem);
+  color: var(--cyan);
+  white-space: pre;
+  overflow-x: auto;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+  line-height: 1.1;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  background: linear-gradient(90deg, var(--cyan) 0%, var(--magenta) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.hero .tagline {
+  font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+  color: var(--fg-muted);
+  margin-bottom: 2rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ───── BADGES ───── */
+.badges { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin: 1.5rem 0; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  border: 1px solid;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.badge:hover { transform: translateY(-2px); box-shadow: 0 4px 14px currentColor; }
+.badge.pages { color: var(--cyan); border-color: var(--cyan); background: rgba(0, 255, 255, 0.08); }
+.badge.kb    { color: var(--magenta); border-color: var(--magenta); background: rgba(255, 0, 255, 0.08); }
+.badge.papers { color: var(--green); border-color: var(--green); background: rgba(57, 255, 20, 0.08); }
+.badge.live  { color: var(--blue); border-color: var(--blue); background: rgba(88, 166, 255, 0.08); }
+.badge.year  { color: var(--orange); border-color: var(--orange); background: rgba(255, 166, 87, 0.08); }
+
+/* ───── SECTION ───── */
+.section { margin: 4rem 0; }
+
+.section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--cyan);
+  letter-spacing: 0.4em;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.section-title::before { content: '▶'; color: var(--magenta); }
+
+/* ───── OVERVIEW TERMINAL ───── */
+.terminal {
+  background: var(--bg-3);
+  border: 1px solid var(--border-bright);
+  border-radius: 8px;
+  padding: 1.5rem;
+  font-size: 0.85rem;
+  line-height: 1.9;
+  position: relative;
+  overflow-x: auto;
+  box-shadow: var(--shadow);
+}
+.terminal::before {
+  content: '● ● ●';
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+  color: var(--fg-muted);
+  font-size: 0.6rem;
+  letter-spacing: 0.4em;
+}
+.terminal .k { color: var(--cyan); }
+.terminal .v { color: var(--yellow); }
+.terminal .c { color: var(--fg-muted); }
+.terminal .n { color: var(--green); }
+.terminal .m { color: var(--magenta); }
+
+/* ───── GRID ───── */
+.kb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.kb-card {
+  background: linear-gradient(135deg, var(--bg-3) 0%, rgba(22, 27, 34, 0.6) 100%);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.75rem;
+  text-decoration: none;
+  color: var(--fg);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+.kb-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--accent, var(--cyan));
+  box-shadow: 0 0 12px var(--accent, var(--cyan));
+}
+.kb-card::after {
+  content: '';
+  position: absolute;
+  top: -50%; right: -50%;
+  width: 100%; height: 100%;
+  background: radial-gradient(circle, var(--accent, var(--cyan)) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.kb-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent, var(--cyan));
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), 0 0 20px var(--accent, var(--cyan));
+}
+.kb-card:hover::after { opacity: 0.08; }
+
+.kb-card.driver    { --accent: var(--cyan); }
+.kb-card.embodied  { --accent: var(--magenta); }
+.kb-card.uav       { --accent: var(--green); }
+.kb-card.skills    { --accent: var(--orange); }
+
+.kb-icon { font-size: 2.2rem; margin-bottom: 0.75rem; }
+.kb-card h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  color: var(--accent, var(--cyan));
+}
+.kb-card .kb-desc { color: var(--fg-muted); font-size: 0.85rem; margin-bottom: 1rem; min-height: 2.5rem; }
+.kb-card .yaml { font-size: 0.78rem; line-height: 1.7; flex-grow: 1; }
+.kb-card .yaml .k { color: var(--accent, var(--cyan)); }
+.kb-card .yaml .v { color: var(--yellow); }
+.kb-card .topics { margin-top: 1rem; font-size: 0.78rem; color: var(--fg-muted); border-top: 1px solid var(--border); padding-top: 0.75rem; }
+.kb-card .topics strong { color: var(--accent, var(--cyan)); }
+
+/* ───── STATS TABLE ───── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.stat {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.stat::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent, var(--cyan));
+}
+.stat.cyan   { --accent: var(--cyan); }
+.stat.magenta{ --accent: var(--magenta); }
+.stat.green  { --accent: var(--green); }
+.stat.blue   { --accent: var(--blue); }
+.stat.orange { --accent: var(--orange); }
+
+.stat .num {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 800;
+  color: var(--accent, var(--cyan));
+  text-shadow: 0 0 10px var(--accent, var(--cyan));
+  margin-bottom: 0.25rem;
+}
+.stat .label { font-size: 0.72rem; color: var(--fg-muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+/* ───── STACK BOX ───── */
+.stack-box {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--cyan);
+  border-radius: 8px;
+  padding: 1.5rem;
+  font-size: 0.85rem;
+  white-space: pre;
+  overflow-x: auto;
+  line-height: 1.7;
+  margin-top: 1rem;
+}
+
+/* ───── ACCESS GRID ───── */
+.access-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.access {
+  background: var(--bg-3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+.access .label { font-size: 0.7rem; color: var(--cyan); letter-spacing: 0.2em; margin-bottom: 0.5rem; }
+.access .url   { font-size: 0.85rem; color: var(--green); word-break: break-all; }
+.access .url a { color: inherit; text-decoration: none; }
+.access .url a:hover { text-decoration: underline; }
+
+/* ───── FOOTER ───── */
+footer {
+  margin-top: 5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--fg-muted);
+}
+footer .ascii {
+  color: var(--cyan);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+footer .blink { animation: blink 1.2s infinite step-end; color: var(--green); }
+@keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+
+/* ───── RESPONSIVE ───── */
+@media (max-width: 720px) {
+  .wrap { padding: 1.5rem 1rem; }
+  .kb-grid { grid-template-columns: 1fr; }
+  .hero pre { font-size: 0.45rem; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ╔══════════ HERO ══════════╗ -->
+<section class="hero">
+<pre>
+██╗  ██╗███╗   ██╗ ██████╗ ██╗    ██╗██╗     ███████╗██████╗  ██████╗ ███████╗
+██║ ██╔╝████╗  ██║██╔═══██╗██║    ██║██║     ██╔════╝██╔══██╗██╔═══██╗██╔════╝
+█████╔╝ ██╔██╗ ██║██║   ██║██║ █╗ ██║██║     █████╗  ██║  ██║██║   ██║█████╗
+██╔═██╗ ██║╚██╗██║██║   ██║██║███╗██║██║     ██╔══╝  ██║  ██║██║   ██║██╔══╝
+██║  ██╗██║ ╚████║╚██████╔╝╚███╔███╔╝███████╗███████╗██████╔╝╚██████╔╝███████╗
+╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝  ╚══╝╚══╝ ╚══════╝╚══════╝╚═════╝  ╚═════╝ ╚══════╝
+                            ┌─ Knowledge Base Hub ─┐
+                            │   650+ Papers · 87+ Deep Reviews   │
+                            └────────────────────────────────────┘
+</pre>
+
+<h1>knowledge-bases</h1>
+<p class="tagline">Curated AI · Robotics · Research Knowledge Bases<br>Dark futuristic landing page for 4 specialized AI research repositories.</p>
+
+<div class="badges">
+  <a href="https://ace-trump-tech.github.io/knowledge-bases/" class="badge pages">⚡ GitHub Pages · LIVE</a>
+  <a href="#grid" class="badge kb">◆ 4 Knowledge Bases</a>
+  <span class="badge papers">▣ 650+ Papers</span>
+  <span class="badge live">● Maintained</span>
+  <span class="badge year">📅 2026-08-31</span>
+</div>
+</section>
+
+<!-- ╔══════════ OVERVIEW TERMINAL ══════════╗ -->
+<section class="section">
+<div class="section-title">SYSTEM.OVERVIEW</div>
+<div class="terminal">
+<span class="c">─────────────────────────────────────────────────────────────────</span>
+  <span class="k">SYSTEM:</span>       <span class="v">knowledge-bases (GitHub Pages)</span>
+  <span class="k">PROFILE:</span>      <span class="v">ace-trump-tech</span>
+  <span class="k">STACK:</span>        <span class="v">Markdown · HTML5 · CSS3 · GitHub Pages</span>
+  <span class="k">GENERATED:</span>    <span class="v">2026-08-31</span>
+  <span class="k">COVERAGE:</span>     <span class="m">Autonomous Driving</span> · <span class="m">Embodied AI</span> · <span class="m">UAV</span> · <span class="m">Research</span>
+  <span class="k">TOTAL PAPERS:</span> <span class="n">650+</span>
+  <span class="k">TOTAL DEEP:</span>   <span class="n">87+ deep reviews</span>
+  <span class="k">TOTAL DOCS:</span>   <span class="n">20+ innovation / roadmap docs</span>
+<span class="c">─────────────────────────────────────────────────────────────────</span>
+</div>
+</section>
+
+<!-- ╔══════════ KB GRID ══════════╗ -->
+<section class="section" id="grid">
+<div class="section-title">KNOWLEDGE_BASES.LIST</div>
+
+<div class="kb-grid">
+
+  <a href="https://github.com/ace-trump-tech/driver-kb" class="kb-card driver">
+    <div class="kb-icon">🚗</div>
+    <h3>driver-kb</h3>
+    <div class="kb-desc">End-to-End Autonomous Driving Knowledge Base V2 — the most comprehensive.</div>
+    <div class="yaml">
+<span class="k">├──</span> <span class="k">Papers:</span>      <span class="v">311</span>
+<span class="k">├──</span> <span class="k">Deep:</span>        <span class="v">50 deep reviews</span>
+<span class="k">├──</span> <span class="k">Subtopics:</span>   <span class="v">8</span>
+<span class="k">├──</span> <span class="k">Innovation:</span>  <span class="v">5 top-level + 8 roadmaps</span>
+<span class="k">├──</span> <span class="k">Skills:</span>      <span class="v">4 Claude skills</span>
+<span class="k">└──</span> <span class="k">Span:</span>        <span class="v">2017-2026</span>
+    </div>
+    <div class="topics"><strong>Topics:</strong> UniAD · GAIA-1 · VAD · Think2Drive · GPT-Driver · DiffusionDrive</div>
+  </a>
+
+  <a href="https://github.com/ace-trump-tech/embodied-ai-kb" class="kb-card embodied">
+    <div class="kb-icon">🤖</div>
+    <h3>embodied-ai-kb</h3>
+    <div class="kb-desc">Embodied AI Knowledge Base — VLA, manipulation, humanoid, navigation, world models.</div>
+    <div class="yaml">
+<span class="k">├──</span> <span class="k">Papers:</span>      <span class="v">122</span>
+<span class="k">├──</span> <span class="k">Deep:</span>        <span class="v">22 deep reviews</span>
+<span class="k">├──</span> <span class="k">Subtopics:</span>   <span class="v">10</span>
+<span class="k">├──</span> <span class="k">Innovation:</span>  <span class="v">6 top-level (future_outlook · idea_summaries)</span>
+<span class="k">├──</span> <span class="k">Roadmaps:</span>    <span class="v">10 subtopic roadmaps</span>
+<span class="k">└──</span> <span class="k">Span:</span>        <span class="v">2018-2026</span>
+    </div>
+    <div class="topics"><strong>Topics:</strong> RT-2 · OpenVLA · π0 · Diffusion Policy · DreamerV3 · GR00T N1 · HumanPlus</div>
+  </a>
+
+  <a href="https://github.com/ace-trump-tech/uav-gwm-kb" class="kb-card uav">
+    <div class="kb-icon">🚁</div>
+    <h3>uav-gwm-kb</h3>
+    <div class="kb-desc">UAV Gaussian World Model for Active Perception — focused, deep.</div>
+    <div class="yaml">
+<span class="k">├──</span> <span class="k">Papers:</span>      <span class="v">110</span>
+<span class="k">├──</span> <span class="k">Deep:</span>        <span class="v">15 deep reviews</span>
+<span class="k">├──</span> <span class="k">Subtopics:</span>   <span class="v">6</span>
+<span class="k">├──</span> <span class="k">Innovation:</span>  <span class="v">5 (architecture · tasks · opportunities · landscape · proposal)</span>
+<span class="k">├──</span> <span class="k">Focus:</span>       <span class="v">GWM · 3DGS · active perception · VLN</span>
+<span class="k">└──</span> <span class="k">Span:</span>        <span class="v">2018-2026</span>
+    </div>
+    <div class="topics"><strong>Topics:</strong> GWM · GaussianDream · GaussianDWM · PC-NBV · LM-Nav · 3DGS-VLN</div>
+  </a>
+
+  <a href="https://github.com/ace-trump-tech/research-skills" class="kb-card skills">
+    <div class="kb-icon">🔬</div>
+    <h3>research-skills</h3>
+    <div class="kb-desc">Research Tools & Skills Knowledge Base — Claude Code skills, academic databases, Zotero, Obsidian.</div>
+    <div class="yaml">
+<span class="k">├──</span> <span class="k">Tools:</span>       <span class="v">107</span>
+<span class="k">├──</span> <span class="k">Categories:</span> <span class="v">10</span>
+<span class="k">├──</span> <span class="k">Comparisons:</span> <span class="v">5 cross-category</span>
+<span class="k">├──</span> <span class="k">Workflows:</span>  <span class="v">4 recommended</span>
+<span class="k">├──</span> <span class="k">Insights:</span>    <span class="v">selection-guide + starter-stacks</span>
+<span class="k">└──</span> <span class="k">Span:</span>        <span class="v">2023-2026</span>
+    </div>
+    <div class="topics"><strong>Topics:</strong> Claude Code Skills · Paper-harness · Semantic Scholar · Zotero · Obsidian · Dataviz</div>
+  </a>
+
+</div>
+</section>
+
+<!-- ╔══════════ STATS ══════════╗ -->
+<section class="section">
+<div class="section-title">METRICS.OVERVIEW</div>
+
+<div class="stats-grid">
+  <div class="stat cyan"><div class="num">4</div><div class="label">Knowledge Bases</div></div>
+  <div class="stat magenta"><div class="num">650+</div><div class="label">Total Papers</div></div>
+  <div class="stat green"><div class="num">87+</div><div class="label">Deep Reviews</div></div>
+  <div class="stat orange"><div class="num">20+</div><div class="label">Innovation Docs</div></div>
+  <div class="stat cyan"><div class="num">28</div><div class="label">Roadmaps</div></div>
+  <div class="stat blue"><div class="num">4</div><div class="label">Claude Skills</div></div>
+  <div class="stat green"><div class="num">2.4K+</div><div class="label">★ Stars</div></div>
+  <div class="stat magenta"><div class="num">3K+</div><div class="label">⑂ Forks</div></div>
+</div>
+</section>
+
+<!-- ╔══════════ STACK ══════════╗ -->
+<section class="section">
+<div class="section-title">STACK.CONFIG</div>
+
+<div class="stack-box">┌─────────────────────────────────────────────────────────────┐
+│  <span style="color:var(--cyan)">Frontend:</span>   HTML5 · CSS3 (custom · no framework)            │
+│  <span style="color:var(--cyan)">Typography:</span> JetBrains Mono · Fira Code · SF Mono          │
+│  <span style="color:var(--cyan)">Hosting:</span>    GitHub Pages (ace-trump-tech.github.io/...)   │
+│  <span style="color:var(--cyan)">Source:</span>     Markdown → Pandoc rendered                     │
+│  <span style="color:var(--cyan)">Style:</span>      Dark futuristic · neon accents · ASCII art     │
+└─────────────────────────────────────────────────────────────┘</div>
+</section>
+
+<!-- ╔══════════ ACCESS ══════════╗ -->
+<section class="section">
+<div class="section-title">ACCESS.ENDPOINTS</div>
+
+<div class="access-grid">
+
+  <div class="access">
+    <div class="label">⚡ GITHUB PAGES</div>
+    <div class="url"><a href="https://ace-trump-tech.github.io/knowledge-bases/">ace-trump-tech.github.io/knowledge-bases/</a></div>
+  </div>
+
+  <div class="access">
+    <div class="label">🚗 DRIVER-KB</div>
+    <div class="url"><a href="https://github.com/ace-trump-tech/driver-kb">github.com/ace-trump-tech/driver-kb</a></div>
+  </div>
+
+  <div class="access">
+    <div class="label">🤖 EMBODIED-AI-KB</div>
+    <div class="url"><a href="https://github.com/ace-trump-tech/embodied-ai-kb">github.com/ace-trump-tech/embodied-ai-kb</a></div>
+  </div>
+
+  <div class="access">
+    <div class="label">🚁 UAV-GWM-KB</div>
+    <div class="url"><a href="https://github.com/ace-trump-tech/uav-gwm-kb">github.com/ace-trump-tech/uav-gwm-kb</a></div>
+  </div>
+
+  <div class="access">
+    <div class="label">🔬 RESEARCH-SKILLS</div>
+    <div class="url"><a href="https://github.com/ace-trump-tech/research-skills">github.com/ace-trump-tech/research-skills</a></div>
+  </div>
+
+  <div class="access">
+    <div class="label">👤 GITHUB PROFILE</div>
+    <div class="url"><a href="https://github.com/ace-trump-tech">github.com/ace-trump-tech</a></div>
+  </div>
+
+</div>
+</section>
+
+<!-- ╔══════════ FOOTER ══════════╗ -->
+<footer>
+<div class="ascii">
+[ ◢◣ Built for the research community ◢◣ ]<br>
+[   Every byte curated with intention     ]
+</div>
+<div>ace-trump-tech · MIT License · Built with Claude Opus · 2026</div>
+<div style="margin-top:0.5rem"><span class="blink">█</span> <span style="color:var(--cyan)">READY</span></div>
+</footer>
+
+</div>
+</body>
+</html>
