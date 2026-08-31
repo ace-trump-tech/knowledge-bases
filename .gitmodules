@@ -10,3 +10,18 @@
 [submodule "bases/research-skills"]
 	path = bases/research-skills
 	url = https://github.com/ace-trump-tech/research-skills.git
+[submodule "projects/python-sdk"]
+	path = projects/python-sdk
+	url = https://github.com/ace-trump-tech/python-sdk.git
+[submodule "projects/Paper-Harness"]
+	path = projects/Paper-Harness
+	url = https://github.com/ace-trump-tech/Paper-Harness.git
+[submodule "projects/paper-harness-professional"]
+	path = projects/paper-harness-professional
+	url = https://github.com/ace-trump-tech/paper-harness-professional.git
+[submodule "projects/paper-harness-undergraduate"]
+	path = projects/paper-harness-undergraduate
+	url = https://github.com/ace-trump-tech/paper-harness-undergraduate.git
+[submodule "projects/MindPaw"]
+	path = projects/MindPaw
+	url = https://github.com/ace-trump-tech/MindPaw.git

@@ -31,7 +31,7 @@
 
 ## Reproducible checkout
 
-This repository is a maintained hub, not a second copy of every paper or tool. The four collections under [`bases/`](./bases/) are Git submodules pinned to explicit upstream commits. This keeps history, licenses, and ownership clear while allowing one reproducible checkout.
+This repository is a maintained hub, not a second copy of every paper or tool. The collections under [`bases/`](./bases/) and [`projects/`](./projects/) are Git submodules pinned to explicit upstream commits. Each entry remains an independent GitHub repository; the directory in this hub is only a versioned navigation point. This keeps history, licenses, and ownership clear while allowing one reproducible checkout.
 
 ### Clone everything
 
@@ -66,6 +66,18 @@ The power-grid self-learning materials are currently maintained separately and a
 Please read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before opening an issue or PR. We welcome human-maintained contributions, especially corrections with primary sources, reproducible import scripts, and carefully reviewed submodule updates. AI-generated issue reports, comments, PR descriptions, and review replies are not accepted; authors must be able to reproduce and explain their changes.
 
 The hub only records pointers and maintenance metadata. Content changes belong in the relevant submodule, following that project's license and contribution policy.
+
+## Independent project links
+
+These directories are intentionally independent projects. On GitHub, click a directory to open the corresponding repository; locally, initialize submodules only when you also want a working copy.
+
+| Path | Independent repository | Purpose |
+| --- | --- | --- |
+| [`projects/python-sdk`](./projects/python-sdk) | [python-sdk](https://github.com/ace-trump-tech/python-sdk) | MCP Python SDK fork and contribution work |
+| [`projects/Paper-Harness`](./projects/Paper-Harness) | [Paper-Harness](https://github.com/ace-trump-tech/Paper-Harness) | Auditable multi-agent research harness |
+| [`projects/paper-harness-professional`](./projects/paper-harness-professional) | [paper-harness-professional](https://github.com/ace-trump-tech/paper-harness-professional) | Professional CV research workflow |
+| [`projects/paper-harness-undergraduate`](./projects/paper-harness-undergraduate) | [paper-harness-undergraduate](https://github.com/ace-trump-tech/paper-harness-undergraduate) | Beginner thesis workflow |
+| [`projects/MindPaw`](./projects/MindPaw) | [MindPaw](https://github.com/ace-trump-tech/MindPaw) | Embedded embodied-AI robot platform |
 
 ---
 
