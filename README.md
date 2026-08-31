@@ -29,6 +29,46 @@
 
 ---
 
+## Reproducible checkout
+
+This repository is a maintained hub, not a second copy of every paper or tool. The four collections under [`bases/`](./bases/) are Git submodules pinned to explicit upstream commits. This keeps history, licenses, and ownership clear while allowing one reproducible checkout.
+
+### Clone everything
+
+```bash
+git clone --recurse-submodules https://github.com/ace-trump-tech/knowledge-bases.git
+cd knowledge-bases
+./scripts/bootstrap.sh --check
+```
+
+For an existing clone:
+
+```bash
+git submodule update --init --recursive
+./scripts/bootstrap.sh --check
+```
+
+A plain `git clone` intentionally does not download submodules; this is standard Git behavior. Use `--recurse-submodules` or the bootstrap script instead of relying on filesystem symlinks, which do not carry another repository's contents and are fragile across machines.
+
+### Maintained collections
+
+| Path | Repository | Scope |
+| --- | --- | --- |
+| [`bases/driver-kb`](./bases/driver-kb) | [driver-kb](https://github.com/ace-trump-tech/driver-kb) | Autonomous driving |
+| [`bases/embodied-ai-kb`](./bases/embodied-ai-kb) | [embodied-ai-kb](https://github.com/ace-trump-tech/embodied-ai-kb) | Embodied AI and robotics |
+| [`bases/uav-gwm-kb`](./bases/uav-gwm-kb) | [uav-gwm-kb](https://github.com/ace-trump-tech/uav-gwm-kb) | UAV Gaussian world models |
+| [`bases/research-skills`](./bases/research-skills) | [research-skills](https://github.com/ace-trump-tech/research-skills) | Research tools and workflows |
+
+The power-grid self-learning materials are currently maintained separately and are not part of this hub's published submodules yet. They are deliberately not represented as a broken local symlink; add them here only after a stable public repository is available.
+
+## Contribution policy
+
+Please read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before opening an issue or PR. We welcome human-maintained contributions, especially corrections with primary sources, reproducible import scripts, and carefully reviewed submodule updates. AI-generated issue reports, comments, PR descriptions, and review replies are not accepted; authors must be able to reproduce and explain their changes.
+
+The hub only records pointers and maintenance metadata. Content changes belong in the relevant submodule, following that project's license and contribution policy.
+
+---
+
 ## ⚡ OVERVIEW
 
 ```yaml

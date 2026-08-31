@@ -1,0 +1,12 @@
+[submodule "bases/driver-kb"]
+	path = bases/driver-kb
+	url = https://github.com/ace-trump-tech/driver-kb.git
+[submodule "bases/embodied-ai-kb"]
+	path = bases/embodied-ai-kb
+	url = https://github.com/ace-trump-tech/embodied-ai-kb.git
+[submodule "bases/uav-gwm-kb"]
+	path = bases/uav-gwm-kb
+	url = https://github.com/ace-trump-tech/uav-gwm-kb.git
+[submodule "bases/research-skills"]
+	path = bases/research-skills
+	url = https://github.com/ace-trump-tech/research-skills.git

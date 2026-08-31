@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Contribution guide
+    url: https://github.com/ace-trump-tech/knowledge-bases/blob/main/CONTRIBUTING.md
+    about: Read the reporting and pull request requirements before opening an issue.

@@ -1,0 +1,30 @@
+name: Source or workflow problem
+description: Report a reproducible problem with the index, links, or bootstrap workflow.
+title: "[bug] "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please write this report yourself. AI-generated issue text, comments, and replies are not accepted.
+  - type: input
+    id: scope
+    attributes:
+      label: Affected scope
+      description: Name the submodule, path, or workflow that is affected.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include commands, commit/version, expected behavior, and actual behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and proposed fix
+      description: Link the source or logs that support the report. If you can fix it, open a PR instead.
+    validations:
+      required: true
