@@ -63,9 +63,17 @@ The power-grid self-learning materials are currently maintained separately and a
 
 ## Contribution policy
 
-Please read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before opening an issue or PR. We welcome human-maintained contributions, especially corrections with primary sources, reproducible import scripts, and carefully reviewed submodule updates. AI-generated issue reports, comments, PR descriptions, and review replies are not accepted; authors must be able to reproduce and explain their changes.
+Please read [`CONTRIBUTING.md`](./CONTRIBUTING.md) before opening an issue or PR. We welcome human-maintained contributions, especially corrections with primary sources, reproducible import scripts, and carefully reviewed submodule updates. AI may assist with search, translation, or formatting, but AI-only or unverifiable reports are rejected; authors must personally reproduce and explain their changes.
 
 The hub only records pointers and maintenance metadata. Content changes belong in the relevant submodule, following that project's license and contribution policy.
+
+### Maintainer controls
+
+- [`catalog/manifest.json`](./catalog/manifest.json) is the machine-readable source of truth for every linked repository. Run `python3 scripts/validate_catalog.py` after changing a pointer or entry.
+- Pull requests are checked for submodule integrity, catalog consistency, shell syntax, and whitespace by [Quality CI](./.github/workflows/quality.yml).
+- A scheduled [Link check](./.github/workflows/link-check.yml) detects stale documentation links.
+- New Issues receive `needs-triage`. Reports must include evidence, source or reproduction details, and a human verification attestation; unverifiable reports can be closed as `needs-more-info`.
+- Read [`SECURITY.md`](./SECURITY.md), [`SUPPORT.md`](./SUPPORT.md), [`MAINTAINERS.md`](./MAINTAINERS.md), and [`CONTENT-LICENSE.md`](./CONTENT-LICENSE.md) for the operational and licensing boundaries.
 
 ## Independent project links
 

@@ -1,0 +1,46 @@
+name: Source or metadata correction
+description: Report an incorrect citation, metadata field, or knowledge-base summary.
+title: "[source] "
+labels: [content-correction, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Submit a concrete, human-verified correction. AI may assist with search or formatting, but the author must verify every claim and answer follow-up questions.
+  - type: input
+    id: path
+    attributes:
+      label: Affected path
+      description: Repository path and file, for example bases/embodied-ai-kb/README.md.
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Primary source
+      description: DOI, arXiv URL, official repository, or publisher page.
+    validations:
+      required: true
+  - type: textarea
+    id: correction
+    attributes:
+      label: Proposed correction
+      description: State the current value, corrected value, and why it is correct.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification notes
+      description: Explain how you personally checked the source and include the access date.
+    validations:
+      required: true
+  - type: checkboxes
+    id: attestation
+    attributes:
+      label: Author verification
+      options:
+        - label: I personally verified this report and can provide additional evidence.
+          required: true
+        - label: I searched existing Issues and this is not a duplicate.
+          required: true

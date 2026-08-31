@@ -6,7 +6,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Please write this report yourself. AI-generated issue text, comments, and replies are not accepted.
+        AI may assist with search or formatting, but the author must personally verify the reproduction and answer maintainer questions. AI-only or unverifiable reports may be closed.
   - type: input
     id: scope
     attributes:
@@ -28,3 +28,12 @@ body:
       description: Link the source or logs that support the report. If you can fix it, open a PR instead.
     validations:
       required: true
+  - type: checkboxes
+    id: attestation
+    attributes:
+      label: Author verification
+      options:
+        - label: I personally ran the reproduction and can provide additional logs or context.
+          required: true
+        - label: I searched existing Issues and this is not a duplicate.
+          required: true

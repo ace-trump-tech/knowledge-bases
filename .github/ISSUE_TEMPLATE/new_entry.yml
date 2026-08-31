@@ -1,0 +1,56 @@
+name: New knowledge-base entry
+description: Propose a paper, dataset, tool, or independent repository for inclusion.
+title: "[entry] "
+labels: [new-entry, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        New entries must be sourced and maintained. Do not submit bulk AI-generated lists without per-item verification.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Entry type
+      options:
+        - paper
+        - dataset
+        - code repository
+        - independent knowledge base
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Canonical URL
+      description: Official paper, DOI, publisher, or source repository URL.
+    validations:
+      required: true
+  - type: input
+    id: title
+    attributes:
+      label: Title and authors
+    validations:
+      required: true
+  - type: textarea
+    id: rationale
+    attributes:
+      label: Why it belongs here
+      description: Explain the gap it fills and name the target submodule or topic.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification and license
+      description: Include access date, license, and the checks you personally performed.
+    validations:
+      required: true
+  - type: checkboxes
+    id: attestation
+    attributes:
+      label: Author verification
+      options:
+        - label: I personally verified the URL, metadata, and license.
+          required: true
+        - label: I can answer maintainer follow-up questions about this entry.
+          required: true

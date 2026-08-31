@@ -1,0 +1,6 @@
+# Default owner for hub metadata and governance.
+* @ace-trump-tech
+
+# Submodule pointers are reviewed by the hub maintainer.
+/bases/ @ace-trump-tech
+/projects/ @ace-trump-tech

@@ -1,0 +1,31 @@
+name: Broken or stale link
+description: Report a dead, moved, or inaccessible source link.
+title: "[link] "
+labels: [broken-link, needs-triage]
+body:
+  - type: input
+    id: path
+    attributes:
+      label: Affected path
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: Broken URL
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Reproduction evidence
+      description: Include the date, HTTP status or browser error, and a replacement URL if known.
+    validations:
+      required: true
+  - type: checkboxes
+    id: attestation
+    attributes:
+      label: Author verification
+      options:
+        - label: I opened this URL myself and confirmed the failure.
+          required: true

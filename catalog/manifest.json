@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "generated_by": "scripts/validate_catalog.py",
+  "entries": [
+    {"path": "bases/driver-kb", "repository": "https://github.com/ace-trump-tech/driver-kb", "kind": "knowledge-base", "owner": "ace-trump-tech", "status": "active"},
+    {"path": "bases/embodied-ai-kb", "repository": "https://github.com/ace-trump-tech/embodied-ai-kb", "kind": "knowledge-base", "owner": "ace-trump-tech", "status": "active"},
+    {"path": "bases/uav-gwm-kb", "repository": "https://github.com/ace-trump-tech/uav-gwm-kb", "kind": "knowledge-base", "owner": "ace-trump-tech", "status": "active"},
+    {"path": "bases/research-skills", "repository": "https://github.com/ace-trump-tech/research-skills", "kind": "knowledge-base", "owner": "ace-trump-tech", "status": "active"},
+    {"path": "projects/python-sdk", "repository": "https://github.com/ace-trump-tech/python-sdk", "kind": "project", "owner": "ace-trump-tech", "status": "active"},
+    {"path": "projects/Paper-Harness", "repository": "https://github.com/ace-trump-tech/Paper-Harness", "kind": "project", "owner": "ace-trump-tech", "status": "active"},
+    {"path": "projects/paper-harness-professional", "repository": "https://github.com/ace-trump-tech/paper-harness-professional", "kind": "project", "owner": "ace-trump-tech", "status": "active"},
+    {"path": "projects/paper-harness-undergraduate", "repository": "https://github.com/ace-trump-tech/paper-harness-undergraduate", "kind": "project", "owner": "ace-trump-tech", "status": "active"},
+    {"path": "projects/MindPaw", "repository": "https://github.com/ace-trump-tech/MindPaw", "kind": "project", "owner": "ace-trump-tech", "status": "active"}
+  ]
+}

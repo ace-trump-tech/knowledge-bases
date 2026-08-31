@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["schema_version", "entries"],
+  "properties": {
+    "schema_version": {"type": "integer", "const": 1},
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "repository", "kind", "owner", "status"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "repository": {"type": "string", "pattern": "^https://github\\.com/"},
+          "kind": {"enum": ["knowledge-base", "project"]},
+          "owner": {"type": "string", "minLength": 1},
+          "status": {"enum": ["active", "deprecated", "planned"]}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
