@@ -50,7 +50,9 @@ jobs:
 
           echo "==> arxiv-daily fetch starting at $DATE UTC"
           arxiv-daily fetch \
-            --all \
+            --config scripts/arxiv-daily/config/driver-kb.yaml \
+            --config scripts/arxiv-daily/config/embodied-ai-kb.yaml \
+            --config scripts/arxiv-daily/config/uav-gwm-kb.yaml \
             --output-root "$OUT" \
             --date "$DATE" \
             --s2-cache "$OUT/.s2_cache.json"
