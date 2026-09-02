@@ -41,17 +41,20 @@ jobs:
         env:
           SEMANTIC_SCHOLAR_KEY: ${{ secrets.SEMANTIC_SCHOLAR_KEY || '' }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYTHONUNBUFFERED: "1"
         run: |
           set -euo pipefail
           DATE="$(date -u +%Y-%m-%d)"
           OUT="/tmp/arxiv-daily-${DATE}"
           mkdir -p "$OUT"
 
+          echo "==> arxiv-daily fetch starting at $DATE UTC"
           arxiv-daily fetch \
             --all \
             --output-root "$OUT" \
             --date "$DATE" \
             --s2-cache "$OUT/.s2_cache.json"
+          echo "==> arxiv-daily fetch complete"
 
           # Persist the local draft under the submodule's arxiv-daily/ tree
           # so the author can `git add` + push via `arxiv-daily publish` later.

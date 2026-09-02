@@ -111,21 +111,29 @@ def cmd_fetch(args) -> int:
         try:
             cfg = load_config(cfg_path)
         except Exception as exc:    # noqa: BLE001 - surface to user
-            print(f"[!] {cfg_path}: {exc}", file=sys.stderr)
+            print(f"[!] {cfg_path}: {exc}", file=sys.stderr, flush=True)
             rc = 1
             continue
-        result = run_fetch(
-            cfg,
-            output_root=args.output_root,
-            iso_date=args.date,
-            dry_run=args.dry_run,
-            ollama=None,
-            s2=s2,
-        )
+        print(f"==> fetching {cfg.name} ({cfg.kb_repo})", flush=True)
+        try:
+            result = run_fetch(
+                cfg,
+                output_root=args.output_root,
+                iso_date=args.date,
+                dry_run=args.dry_run,
+                ollama=None,
+                s2=s2,
+            )
+        except Exception as exc:    # noqa: BLE001 - never swallow pipeline errors
+            print(f"[!] {cfg.name}: fetch failed: {type(exc).__name__}: {exc}",
+                  file=sys.stderr, flush=True)
+            rc = 1
+            continue
         print(
             f"[{cfg.name}] {result.iso_date}: "
             f"new={result.new_count} skipped={result.skipped_duplicates} "
-            f"manifest={result.manifest_md_path}"
+            f"manifest={result.manifest_md_path}",
+            flush=True,
         )
     return rc
 
