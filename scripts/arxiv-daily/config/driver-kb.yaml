@@ -1,0 +1,49 @@
+# arxiv-daily config: driver-kb
+# Mirrors the 8 subtopics under `bases/driver-kb/idea/0X_*/`.
+
+kb_repo: ace-trump-tech/driver-kb
+kb_local_path: ./bases/driver-kb
+
+arxiv_categories:
+    - cs.CV
+    - cs.RO
+    - cs.AI
+    - cs.LG
+
+fetch_window_hours: 26
+top_n_per_subtopic: 3
+deep_review_threshold: 80
+ollama_model: qwen2.5:14b
+
+subtopics:
+    - id: "01_unified_perception_planning"
+      description: "End-to-end perception-decision-planning in a single network; planning-oriented Transformer stacks."
+      keywords: ["end-to-end autonomous driving", "unified perception planning", "uniad", "planning-oriented", "bev planning", "transfuser", "drive transformer"]
+
+    - id: "02_world_model"
+      description: "Driving world models for prediction, simulation, planning rollouts; generative driving video."
+      keywords: ["driving world model", "gaia-1", "neural simulator", "video generation driving", "drive-wm", "vista", "mga", "vista"]
+
+    - id: "03_imitation_learning"
+      description: "Imitation learning, behaviour cloning, DAgger and their modern variants for driving."
+      keywords: ["imitation learning", "behaviour cloning", "dagger", "expert demonstration", "learning from demonstration driving"]
+
+    - id: "04_reinforcement_learning"
+      description: "Reinforcement learning, offline RL, preference-based RL applied to autonomous driving."
+      keywords: ["reinforcement learning driving", "offline rl driving", "preference rl", "sac driving", "dreamerv3 driving", "world model rl"]
+
+    - id: "05_llm_foundation_model"
+      description: "LLM and large foundation models used as planners, reasoners or controllers for driving."
+      keywords: ["llm driving", "drivelm", "gpt-driver", "foundation model driving", "vlm driving", "language model planner"]
+
+    - id: "06_planning_control"
+      description: "Trajectory planning, motion planning, model predictive control and end-to-end control."
+      keywords: ["trajectory planning", "motion planning", "model predictive control", "control end-to-end", "lqr", "pid driving"]
+
+    - id: "07_datasets_benchmarks"
+      description: "Driving datasets, benchmarks, simulation platforms (nuScenes, Waymo, CARLA, etc.)."
+      keywords: ["nuscenes", "waymo open dataset", "argoverse", "carla benchmark", "kitti", "driving dataset"]
+
+    - id: "08_simulation_closedloop"
+      description: "Closed-loop simulation, CARLA-style evaluation, sim-to-real for driving policies."
+      keywords: ["closed-loop simulation", "carla closed-loop", "benchmark closed-loop driving", "sim-to-real driving"]

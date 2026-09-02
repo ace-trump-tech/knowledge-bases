@@ -1,0 +1,106 @@
+name: arxiv-daily (fetch stage)
+
+# Stage 1 of the arxiv-daily pipeline.
+# Stage 2 (`arxiv-daily summarize`) is intentionally local-only because it
+# requires the author to run a local ollama instance.
+
+"on":
+  schedule:
+    # Daily at 06:17 UTC = 14:17 Beijing. Off-the-hour to avoid global crons.
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout hub with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 1
+          token: ${{ secrets.SUBMODULE_PUSH_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install arxiv-daily
+        run: |
+          python -m pip install --quiet --upgrade pip
+          pip install --quiet ./scripts/arxiv-daily
+
+      - name: Fetch + classify + rank (dry-run friendly)
+        env:
+          SEMANTIC_SCHOLAR_KEY: ${{ secrets.SEMANTIC_SCHOLAR_KEY || '' }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          DATE="$(date -u +%Y-%m-%d)"
+          OUT="/tmp/arxiv-daily-${DATE}"
+          mkdir -p "$OUT"
+
+          arxiv-daily fetch \
+            --all \
+            --output-root "$OUT" \
+            --date "$DATE" \
+            --s2-cache "$OUT/.s2_cache.json"
+
+          # Persist the local draft under the submodule's arxiv-daily/ tree
+          # so the author can `git add` + push via `arxiv-daily publish` later.
+          for kb in bases/driver-kb bases/embodied-ai-kb bases/uav-gwm-kb; do
+            if [ -d "$OUT/$DATE" ]; then
+              mkdir -p "$kb/arxiv-daily"
+              rsync -a --delete "$OUT/$DATE/" "$kb/arxiv-daily/$DATE/"
+            fi
+          done
+
+      - name: Open draft PRs (one per KB)
+        env:
+          GITHUB_TOKEN: ${{ secrets.SUBMODULE_PUSH_TOKEN }}
+        run: |
+          set -euo pipefail
+          DATE="$(date -u +%Y-%m-%d)"
+
+          for kb in bases/driver-kb bases/embodied-ai-kb bases/uav-gwm-kb; do
+            kb_name="$(basename "$kb")"
+            # Identify the owner/repo from .gitmodules
+            url=$(git config -f .gitmodules "submodule.${kb}.url")
+            repo="${url%.git}"
+            repo="${repo#https://github.com/}"
+
+            if [ ! -d "$kb/arxiv-daily/$DATE" ]; then
+              echo "[$kb_name] no draft for $DATE; skipping"
+              continue
+            fi
+
+            # Drive everything inside the submodule's worktree so the commit
+            # and push happen there. We use `arxiv-daily publish` so the
+            # same code path runs in Actions and locally.
+            ( cd "$kb" && \
+              arxiv-daily publish \
+                --config "../scripts/arxiv-daily/config/${kb_name}.yaml" \
+                --date "$DATE" \
+                --output-root "../_arxiv_daily_out" \
+                --base-branch main \
+                --commit-message "arxiv-daily: draft daily digest for ${DATE}" \
+                --label arxiv-daily \
+                --label needs-author-review \
+                --token-env GITHUB_TOKEN \
+            )
+          done
+
+      - name: Summarize run
+        if: always()
+        run: |
+          echo "::notice::arxiv-daily fetch stage complete. Review the draft PRs at:"
+          echo "::notice::https://github.com/ace-trump-tech/driver-kb/pulls?q=is%3Apr+label%3Aarxiv-daily"
+          echo "::notice::https://github.com/ace-trump-tech/embodied-ai-kb/pulls?q=is%3Apr+label%3Aarxiv-daily"
+          echo "::notice::https://github.com/ace-trump-tech/uav-gwm-kb/pulls?q=is%3Apr+label%3Aarxiv-daily"

@@ -1,0 +1,39 @@
+# arxiv-daily config: uav-gwm-kb
+# Mirrors the 6 subtopics under `bases/uav-gwm-kb/idea/0X_*/`.
+
+kb_repo: ace-trump-tech/uav-gwm-kb
+kb_local_path: ./bases/uav-gwm-kb
+
+arxiv_categories:
+    - cs.RO
+    - cs.CV
+
+fetch_window_hours: 26
+top_n_per_subtopic: 3
+deep_review_threshold: 80
+ollama_model: qwen2.5:14b
+
+subtopics:
+    - id: "01_gaussian_world_models"
+      description: "UAV Gaussian world models, GaussianDream, GaussianDWM."
+      keywords: ["gaussian world model", "gaussiandream", "gaussiandwm", "uav gwm", "gaussian splatting world model"]
+
+    - id: "02_world_models_foundation"
+      description: "General world models and neural simulators for active perception."
+      keywords: ["world model active perception", "neural simulator uav", "video generation world model"]
+
+    - id: "03_uav_active_perception"
+      description: "Active reconstruction, next-best-view, and active perception for UAVs."
+      keywords: ["active perception", "next-best-view", "nbv", "active reconstruction", "uav perception"]
+
+    - id: "04_active_localization"
+      description: "Active localisation and active SLAM for UAVs."
+      keywords: ["active localization", "active slam", "uav localization", "active mapping"]
+
+    - id: "05_language_guided_navigation"
+      description: "Language-guided navigation and VLN for UAVs (LM-Nav, 3DGS-VLN)."
+      keywords: ["language-guided navigation", "uav vln", "lm-nav", "3dgs-vln", "vision language navigation drone"]
+
+    - id: "06_3d_gaussian_splatting"
+      description: "3D Gaussian splatting techniques relevant to UAV scenes."
+      keywords: ["3d gaussian splatting", "3dgs", "gaussian splatting uav", "drone reconstruction"]

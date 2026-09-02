@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+      xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/"
+      xmlns:arxiv="http://arxiv.org/schemas/atom">
+  <title>arXiv Query</title>
+  <id>http://arxiv.org/api/query</id>
+  <updated>2026-09-02T00:00:00Z</updated>
+  <totalResults>2</totalResults>
+  <startIndex>0</startIndex>
+  <itemsPerPage>2</itemsPerPage>
+  <entry>
+    <id>http://arxiv.org/abs/2406.01234v2</id>
+    <title>Driving with Latent World Models for End-to-End Planning</title>
+    <summary>We propose a unified latent world model that integrates perception, prediction, and planning for end-to-end autonomous driving, achieving SOTA on nuScenes. The architecture combines a BEV encoder with a diffusion-based action head. Code at https://example.com/repo.</summary>
+    <published>2026-08-31T10:00:00Z</published>
+    <updated>2026-09-01T08:00:00Z</updated>
+    <author><name>Alice Researcher</name></author>
+    <author><name>Bob Scientist</name></author>
+    <arxiv:doi>10.0000/zenodo.0000</arxiv:doi>
+    <arxiv:journal_ref>CVPR 2026</arxiv:journal_ref>
+    <arxiv:comment>12 pages, 6 figures</arxiv:comment>
+    <arxiv:primary_category term="cs.CV"/>
+    <category term="cs.CV"/>
+    <category term="cs.RO"/>
+    <link href="http://arxiv.org/abs/2406.01234v2" rel="alternate"/>
+    <link href="http://arxiv.org/pdf/2406.01234v2" rel="http://schemas.google.com/gdocs/spreadsheet/2006#pdf" type="application/pdf"/>
+  </entry>
+  <entry>
+    <id>http://arxiv.org/abs/cs.CV/0405001v1</id>
+    <title>Diffusion Policy for Bimanual Manipulation in Cluttered Scenes</title>
+    <summary>A diffusion-based action expert for bimanual manipulation with proprioceptive and visual conditioning. Trained on 50 demonstrations, the policy generalises to unseen object arrangements and outperforms ACT by 14% on success rate.</summary>
+    <published>2026-08-30T22:00:00Z</published>
+    <updated>2026-08-30T22:00:00Z</updated>
+    <author><name>Carol Engineer</name></author>
+    <arxiv:primary_category term="cs.RO"/>
+    <category term="cs.CV"/>
+    <category term="cs.RO"/>
+    <link href="http://arxiv.org/abs/cs.CV/0405001v1" rel="alternate"/>
+    <link href="http://arxiv.org/pdf/cs.CV/0405001v1" rel="http://schemas.google.com/gdocs/spreadsheet/2006#pdf" type="application/pdf"/>
+  </entry>
+</feed>

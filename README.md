@@ -87,6 +87,24 @@ These directories are intentionally independent projects. On GitHub, click a dir
 | [`projects/paper-harness-undergraduate`](./projects/paper-harness-undergraduate) | [paper-harness-undergraduate](https://github.com/ace-trump-tech/paper-harness-undergraduate) | Beginner thesis workflow |
 | [`projects/MindPaw`](./projects/MindPaw) | [MindPaw](https://github.com/ace-trump-tech/MindPaw) | Embedded embodied-AI robot platform |
 
+## Daily arxiv pipeline
+
+The hub runs a daily arxiv ingestion that opens draft PRs against the 3
+paper-bearing knowledge bases (`driver-kb`, `embodied-ai-kb`,
+`uav-gwm-kb`). The pipeline is split between CI and local execution so
+that the author always has the final word, in line with the
+[contribution policy](./CONTRIBUTING.md):
+
+| Stage | Where | Notes |
+| --- | --- | --- |
+| fetch + classify + rank + push | GitHub Actions (`.github/workflows/arxiv-daily.yml`) | Network only; produces manifest + stub markdown |
+| summarize (LLM via ollama) | Author's local machine | Drafts end with `_待人工补_`; ollama fills them in |
+| review + merge | Author | Each PR is labelled `arxiv-daily`, `needs-author-review` |
+
+Tooling lives at [`scripts/arxiv-daily/`](./scripts/arxiv-daily/). See
+its [`README.md`](./scripts/arxiv-daily/README.md) for installation,
+configuration, and the author workflow.
+
 ---
 
 ## ⚡ OVERVIEW

@@ -1,0 +1,57 @@
+# arxiv-daily config: embodied-ai-kb
+# Mirrors the 10 subtopics under `bases/embodied-ai-kb/idea/0X_*/`.
+
+kb_repo: ace-trump-tech/embodied-ai-kb
+kb_local_path: ./bases/embodied-ai-kb
+
+arxiv_categories:
+    - cs.RO
+    - cs.CV
+    - cs.AI
+    - cs.LG
+
+fetch_window_hours: 26
+top_n_per_subtopic: 3
+deep_review_threshold: 80
+ollama_model: qwen2.5:14b
+
+subtopics:
+    - id: "01_vla_models"
+      description: "Vision-Language-Action models: RT-2, OpenVLA, pi0, SpatialVLA, etc."
+      keywords: ["vision-language-action", "vla model", "rt-2", "openvla", "pi0", "spatialvla", "octo", "robobrain"]
+
+    - id: "02_manipulation"
+      description: "Manipulation policies: diffusion policy, ACT, 3D Diffuser Actor, RDT-1B."
+      keywords: ["manipulation policy", "diffusion policy", "act action chunking", "3d diffuser actor", "rdt-1b", "manipulation transformer"]
+
+    - id: "03_dexterous_bimanual"
+      description: "Dexterous and bimanual manipulation: ALOHA, Mobile ALOHA, OK-Robot."
+      keywords: ["dexterous manipulation", "bimanual", "aloha", "mobile aloha", "ok-robot", "twin hands"]
+
+    - id: "04_humanoid_robots"
+      description: "Humanoid robots: HOVER, GR00T N1, HumanPlus, Unitree H1, Berkeley Humanoid."
+      keywords: ["humanoid", "humanoid robot", "hover nvidia", "gr00t", "humanplus", "unitree h1", "berkeley humanoid"]
+
+    - id: "05_quadruped_locomotion"
+      description: "Quadruped locomotion and whole-body control."
+      keywords: ["quadruped", "legged locomotion", "anymal", "spot", "deeprobotics", "quadruped policy"]
+
+    - id: "06_visual_navigation"
+      description: "Visual navigation and vision-language navigation (VLN)."
+      keywords: ["visual navigation", "vision language navigation", "vln", "object-goal navigation", "lm-nav", "r2r"]
+
+    - id: "07_world_models_robotics"
+      description: "World models for robotics: DreamerV3, GR-1, GR-2, GAIA-1."
+      keywords: ["world model robotics", "dreamerv3", "gr-1", "gr-2", "robot video prediction", "imagen robot"]
+
+    - id: "08_tactile_multimodal"
+      description: "Tactile sensing and multimodal fusion: AnyTouch, RVT-2, tactile VLA."
+      keywords: ["tactile sensing", "anytouch", "rvt-2", "tactile vla", "visuotactile", "tactile representation"]
+
+    - id: "09_datasets_benchmarks"
+      description: "Robot datasets and benchmarks: Open X-Embodiment, DROID, RLBench, AgiBot World, LIBERO."
+      keywords: ["open x-embodiment", "droid dataset", "rlbench", "agibot world", "libero", "metaworld", "robocasa", "robot benchmark"]
+
+    - id: "10_sim2real_transfer"
+      description: "Sim-to-real transfer for robot policies, MuJoCo Playground, ADA, Isaac Lab."
+      keywords: ["sim2real", "sim-to-real", "mujoco playground", "isaac lab", "domain randomization", "ada sim2real"]
