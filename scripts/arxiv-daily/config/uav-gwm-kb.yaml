@@ -8,7 +8,7 @@ arxiv_categories:
     - cs.RO
     - cs.CV
 
-fetch_window_hours: 26
+fetch_window_hours: 168
 top_n_per_subtopic: 3
 deep_review_threshold: 80
 ollama_model: qwen2.5:14b

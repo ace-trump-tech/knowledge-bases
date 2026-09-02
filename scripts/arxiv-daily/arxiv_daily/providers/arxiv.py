@@ -18,8 +18,8 @@ from ..exceptions import ProviderError
 
 LOGGER = logging.getLogger(__name__)
 
-ARXIV_ENDPOINT = "http://export.arxiv.org/api/query"
-DEFAULT_TIMEOUT = 30.0
+ARXIV_ENDPOINT = "https://export.arxiv.org/api/query"
+DEFAULT_TIMEOUT = 60.0
 USER_AGENT = "arxiv-daily/0.1 (+https://github.com/ace-trump-tech/knowledge-bases)"
 
 
@@ -128,8 +128,8 @@ class ArxivClient:
         endpoint: str = ARXIV_ENDPOINT,
         timeout: float = DEFAULT_TIMEOUT,
         user_agent: str = USER_AGENT,
-        max_retries: int = 3,
-        backoff_seconds: float = 3.0,
+        max_retries: int = 4,
+        backoff_seconds: float = 5.0,
     ) -> None:
         import requests
 
