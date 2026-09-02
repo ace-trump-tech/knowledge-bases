@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -19,6 +20,17 @@ from .providers.semantic_scholar import SemanticScholarClient
 from .state import KBState, load_state, save_state
 
 LOGGER = logging.getLogger(__name__)
+
+
+def _configure_logging() -> None:
+    """One-shot INFO setup so Actions logs show what fetch actually does."""
+    root = logging.getLogger()
+    if not root.handlers:
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+            stream=sys.stdout,
+        )
 
 
 @dataclass
@@ -46,11 +58,13 @@ def run_fetch(
     s2_cache_path: Optional[Path] = None,
 ) -> FetchResult:
     """End-to-end: fetch -> classify -> rank -> select -> render -> state."""
+    _configure_logging()
     if iso_date is None:
         iso_date = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d")
     output_root = Path(output_root)
     day_root = output_root / iso_date
     day_root.mkdir(parents=True, exist_ok=True)
+    LOGGER.info("[%s] starting fetch for %s", cfg.name, iso_date)
 
     arxiv = ArxivClient()
     papers = arxiv.query(
@@ -79,6 +93,11 @@ def run_fetch(
         classified[paper.short_id()] = cls.subtopic_id or ""
         confs[paper.short_id()] = cls.confidence
         pairs.append((paper, cls.confidence))
+
+    LOGGER.info(
+        "[%s] kept=%d skipped_dup=%d classified=%d",
+        cfg.name, len(pairs), skipped, len({k for k,v in classified.items() if v}),
+    )
 
     ranked = rank_mod.rank_papers(
         [p for p, _ in pairs],
@@ -175,6 +194,9 @@ def run_fetch(
         new_count=new_count,
         skipped_duplicates=skipped,
     )
+
+
+__all__ = ["FetchResult", "run_fetch"]
 
 
 def _stub_name(paper: ArxivPaper) -> str:
