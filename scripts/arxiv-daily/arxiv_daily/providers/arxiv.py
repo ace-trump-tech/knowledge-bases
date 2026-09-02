@@ -192,12 +192,18 @@ class ArxivClient:
     def _get_with_retry(self, params: dict) -> bytes:
         import requests
 
+        # ARXIV's query language treats '+' as a literal character that joins
+        # tokens (e.g. 'cat:cs.RO+OR+cat:cs.CV'). The requests/urllib3 default
+        # encoder turns '+' into '%2B', which arxiv then parses as a single
+        # garbage phrase and returns 0 entries. Build the URL by hand so '+'
+        # survives. The other special characters we use ([, ], :) are accepted
+        # raw by arxiv as well.
+        url = self.endpoint + "?" + "&".join(f"{k}={v}" for k, v in params.items())
+
         attempt = 0
         while True:
             try:
-                resp = self._session.get(
-                    self.endpoint, params=params, timeout=self.timeout
-                )
+                resp = self._session.get(url, timeout=self.timeout)
             except requests.RequestException as exc:
                 if attempt >= self.max_retries:
                     raise ProviderError("arxiv", f"network: {exc}") from exc
