@@ -112,9 +112,11 @@ def cmd_fetch(args) -> int:
             cfg = load_config(cfg_path)
         except Exception as exc:    # noqa: BLE001 - surface to user
             print(f"[!] {cfg_path}: {exc}", file=sys.stderr, flush=True)
+            _gh_notice(f"arxiv-daily[{cfg_path.stem}]: config error: {exc}")
             rc = 1
             continue
         print(f"==> fetching {cfg.name} ({cfg.kb_repo})", flush=True)
+        _gh_notice(f"arxiv-daily[{cfg.name}]: starting fetch for {args.date or 'auto'}")
         try:
             result = run_fetch(
                 cfg,
@@ -127,15 +129,38 @@ def cmd_fetch(args) -> int:
         except Exception as exc:    # noqa: BLE001 - never swallow pipeline errors
             print(f"[!] {cfg.name}: fetch failed: {type(exc).__name__}: {exc}",
                   file=sys.stderr, flush=True)
+            _gh_notice(f"arxiv-daily[{cfg.name}]: FETCH FAILED: {type(exc).__name__}: {exc}")
             rc = 1
             continue
-        print(
+        line = (
             f"[{cfg.name}] {result.iso_date}: "
             f"new={result.new_count} skipped={result.skipped_duplicates} "
-            f"manifest={result.manifest_md_path}",
-            flush=True,
+            f"manifest={result.manifest_md_path}"
         )
+        print(line, flush=True)
+        _gh_notice(
+            f"arxiv-daily[{cfg.name}]: "
+            f"new={result.new_count} dup={result.skipped_duplicates} "
+            f"unclassified={len(result.rendered_unclassified)} "
+            f"subtopics={ {k: len(v) for k, v in result.rendered_by_subtopic.items()} }"
+        )
+    _gh_notice(f"arxiv-daily: done (rc={rc})")
     return rc
+
+
+def _gh_notice(msg: str) -> None:
+    """If running inside GitHub Actions, surface ``msg`` as a step annotation."""
+    import os
+
+    summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary:
+        try:
+            with open(summary, "a", encoding="utf-8") as f:
+                f.write(msg + "\n")
+        except OSError:
+            pass
+    # Always emit to stdout for local runs.
+    print(f"::notice::{msg}", flush=True)
 
 
 # -- summarize -------------------------------------------------------------
