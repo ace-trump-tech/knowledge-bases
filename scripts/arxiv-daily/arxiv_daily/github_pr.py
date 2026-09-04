@@ -123,30 +123,42 @@ def push_branch(branch: str, *, workdir: Path, token: Optional[str] = None) -> N
 
     The submodule's remote is an unauthenticated ``https://github.com/<org>/<repo>.git``
     URL; the GitHub Actions runner has no global credential helper for it, so
-    without help ``git push`` is rejected with HTTP 401/403 (or "terminal
-    prompts disabled" when stdin is closed).
+    without help any network operation against it fails (HTTP 401, or
+    "terminal prompts disabled" when stdin is closed).
 
-    We embed the token in the push URL (OAuth basic-auth form). Fine-grained
-    PATs only contain ``[A-Za-z0-9_]`` so the URL is safe to construct
-    without further escaping. Earlier attempts at ``credential.helper``
-    scripts and inline ``!f()`` helpers failed in the Actions runner — dash
-    rejects ``!f()`` and the temp-script approach still had git fall through
-    to the terminal.
+    Earlier attempts at inline `!f()` helpers and full-URL `git push <url>`
+    both failed in the runner — the former because dash rejects ``!f()``,
+    the latter because `git push <url>` still consults the configured
+    ``origin`` for fast-forward checks, which hits the unauthenticated URL.
+
+    Fix: temporarily rewrite the remote URL to include the token, push with
+    ``git push -u origin <branch>``, then restore the original URL. All
+    network operations during the push (fetch + send) now go through auth.
+    Fine-grained PATs only contain ``[A-Za-z0-9_]`` so URL embedding is safe.
     """
-    if token:
-        origin_url = _run(
-            ["git", "remote", "get-url", "origin"], cwd=workdir, check=False
-        ).stdout.strip()
-        if origin_url.startswith("https://github.com/") and "@" not in origin_url:
-            authed = origin_url.replace(
-                "https://github.com/",
-                f"https://x-access-token:{token}@github.com/",
-                1,
-            )
-            cmd = ["git", "push", authed, f"refs/heads/{branch}:refs/heads/{branch}"]
-            _run(cmd, cwd=workdir)
-            return
-    _run(["git", "push", "-u", "origin", branch], cwd=workdir)
+    if not token:
+        _run(["git", "push", "-u", "origin", branch], cwd=workdir)
+        return
+
+    origin_url = _run(
+        ["git", "remote", "get-url", "origin"], cwd=workdir, check=False
+    ).stdout.strip()
+    if not (origin_url.startswith("https://github.com/") and "@" not in origin_url):
+        _run(["git", "push", "-u", "origin", branch], cwd=workdir)
+        return
+
+    authed = origin_url.replace(
+        "https://github.com/",
+        f"https://x-access-token:{token}@github.com/",
+        1,
+    )
+    _run(["git", "remote", "set-url", "origin", authed], cwd=workdir)
+    try:
+        _run(["git", "push", "-u", "origin", branch], cwd=workdir)
+    finally:
+        _run(
+            ["git", "remote", "set-url", "origin", origin_url], cwd=workdir
+        )
 
 
 def commit_files(
