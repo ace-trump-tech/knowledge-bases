@@ -119,15 +119,34 @@ def commit_files(
 
 
 def create_branch(branch: str, *, workdir: Path, base: str = "main") -> None:
-    """Create (or reset to origin/base) a working branch; no-op if already there."""
+    """Create (or reset to origin/base) a working branch; no-op if already there.
+
+    Stashes any in-progress edits in the submodule's worktree before switching
+    branches — the parent workflow may have rsync'd new files into the
+    submodule between runs and ``git checkout`` refuses to clobber them.
+    """
     _run(["git", "fetch", "origin", base], cwd=workdir, check=False)
     existing = _run(
         ["git", "branch", "--list", branch], cwd=workdir, check=False
     ).stdout.strip()
-    if existing:
-        _run(["git", "checkout", branch], cwd=workdir)
-    else:
-        _run(["git", "checkout", "-b", branch, f"origin/{base}"], cwd=workdir)
+    # Stash any dirty edits so checkout doesn't abort. Keep index clean.
+    dirty = _run(
+        ["git", "status", "--porcelain"], cwd=workdir, check=False
+    ).stdout.strip()
+    if dirty:
+        _run(["git", "stash", "--include-untracked"], cwd=workdir, check=False)
+    try:
+        if existing:
+            _run(["git", "checkout", branch], cwd=workdir)
+        else:
+            _run(["git", "checkout", "-b", branch, f"origin/{base}"], cwd=workdir)
+    finally:
+        # Pop the stash so the new files we just copied land in the worktree.
+        stash_list = _run(
+            ["git", "stash", "list"], cwd=workdir, check=False
+        ).stdout.strip()
+        if stash_list:
+            _run(["git", "stash", "pop"], cwd=workdir, check=False)
 
 
 # -- internals --------------------------------------------------------------

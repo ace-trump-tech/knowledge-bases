@@ -285,14 +285,18 @@ def cmd_publish(args) -> int:
 
         day_root = args.output_root / args.date
         if not day_root.exists():
-            print(f"[{cfg.name}] no draft for {args.date}", file=sys.stderr)
+            print(f"[{cfg.name}] no draft for {args.date} at {day_root}", file=sys.stderr)
             continue
 
+        # Copy every file under <output_root>/<date>/ into
+        # <kb_local>/arxiv-daily/<date>/ so the PR diff stays scoped to the
+        # kb's draft tree (the author later moves files into idea/ by hand).
+        dest_root = kb_local / "arxiv-daily" / args.date
         files: list[Path] = []
         for path in day_root.rglob("*"):
             if path.is_file():
-                rel = path.relative_to(args.output_root)
-                target = kb_local / rel
+                rel = path.relative_to(day_root)
+                target = dest_root / rel
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(path.read_bytes())
                 files.append(target)
