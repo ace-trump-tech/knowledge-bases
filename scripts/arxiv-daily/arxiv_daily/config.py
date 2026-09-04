@@ -55,7 +55,7 @@ class KBConfig:
 
 
 def load_config(path: str | Path) -> KBConfig:
-    p = Path(path)
+    p = Path(path).resolve()
     if not p.exists():
         raise ConfigError(f"config not found: {p}")
     try:
@@ -92,7 +92,12 @@ def load_config(path: str | Path) -> KBConfig:
     return KBConfig(
         name=name,
         kb_repo=kb_repo,
-        kb_local_path=Path(kb_local_path),
+        # Resolve ``kb_local_path`` against the config file's grandparent so the
+        # result is independent of the caller's working directory. The
+        # ``publish`` step runs after ``cd bases/<kb>``, where a bare
+        # ``./bases/<kb>`` would resolve to ``bases/<kb>/bases/<kb>`` and miss
+        # the submodule checkout entirely.
+        kb_local_path=_resolve_local_path(p, kb_local_path),
         arxiv_categories=tuple(str(c) for c in cats),
         subtopics=subtopics,
         fetch_window_hours=int(raw.get("fetch_window_hours", 26)),
@@ -100,6 +105,22 @@ def load_config(path: str | Path) -> KBConfig:
         deep_review_threshold=float(raw.get("deep_review_threshold", 80.0)),
         ollama_model=str(raw.get("ollama_model", "qwen2.5:14b")),
     )
+
+
+def _resolve_local_path(config_path: Path, raw_path: str) -> Path:
+    """Resolve ``raw_path`` (relative) against the config file's grandparent.
+
+    The configs live at ``<repo>/scripts/arxiv-daily/config/<kb>.yaml``; their
+    grandparent is the repo root. ``./bases/driver-kb`` is therefore always
+    resolved to ``<repo>/bases/driver-kb`` regardless of where the caller is
+    cd'd to (fetch step runs from the repo root, publish step runs from
+    inside the submodule).
+    """
+    p = Path(raw_path)
+    if p.is_absolute():
+        return p.resolve()
+    repo_root = config_path.parents[3]  # config/arxiv-daily/scripts/<repo>
+    return (repo_root / p).resolve()
 
 
 __all__ = ["KBConfig", "SubtopicConfig", "load_config"]

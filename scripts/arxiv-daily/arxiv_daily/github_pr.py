@@ -164,7 +164,7 @@ def create_branch(branch: str, *, workdir: Path, base: str = "main") -> None:
 # -- internals --------------------------------------------------------------
 
 
-def _run(cmd: list[str], *, env: dict | None, cwd: Path, check: bool = True) -> subprocess.CompletedProcess:
+def _run(cmd: list[str], *, env: dict | None = None, cwd: Path, check: bool = True) -> subprocess.CompletedProcess:
     import os
 
     full_env = {**os.environ, **(env or {})}
