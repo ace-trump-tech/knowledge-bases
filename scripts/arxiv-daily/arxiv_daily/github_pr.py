@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -124,21 +125,35 @@ def push_branch(branch: str, *, workdir: Path, token: Optional[str] = None) -> N
     URL; the GitHub Actions runner has no global credential helper for it, so
     without help ``git push`` is rejected with HTTP 401/403.
 
-    We install a one-shot credential helper via ``git -c credential.helper=...``
-    so the token never enters the URL itself (avoids quoting issues with
-    fine-grained PATs that may contain ``+`` and ``/``).
+    We write a tiny credential helper to a temp file and point ``git`` at it
+    via ``git -c credential.helper=<path>``. We avoid inline ``!cmd`` syntax
+    because dash rejects ``!f()`` as ``not a valid identifier`` (run #22).
     """
     cmd = ["git", "push", "-u", "origin", branch]
     if token:
-        # Inline credential helper: echo user/pass when invoked. Use single
-        # quotes around the password so any token chars survive shell parsing.
-        helper = (
-            f"!f() {{ echo username=x-access-token; echo password='{token}'; }}; f"
-        )
-        cmd = [
-            "git", "-c", f"credential.helper={helper}", "push", "-u", "origin", branch,
-        ]
-    _run(cmd, cwd=workdir)
+        import tempfile
+
+        fd, helper_path_str = tempfile.mkstemp(prefix="arxiv-helper-", suffix=".sh")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(
+                    "#!/bin/sh\n"
+                    "echo username=x-access-token\n"
+                    f"echo password={token}\n"
+                )
+            os.chmod(helper_path_str, 0o700)
+            cmd = [
+                "git", "-c", f"credential.helper={helper_path_str}",
+                "push", "-u", "origin", branch,
+            ]
+            _run(cmd, cwd=workdir)
+        finally:
+            try:
+                os.unlink(helper_path_str)
+            except OSError:
+                pass
+    else:
+        _run(cmd, cwd=workdir)
 
 
 def commit_files(
