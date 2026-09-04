@@ -140,12 +140,18 @@ def _fill_template(text: str, paper: ArxivPaper, *, is_deep: bool) -> str:
     For the summary template we replace the whole ``## 基本信息`` block with a
     richer multi-line section. For the deep template we just replace
     ``<Paper Title>`` and the basic-info block.
+
+    We pass the new text via a lambda replacement rather than a string so that
+    paper fields containing literal ``\\u``, ``\\1``, ``\\g<...>`` etc. are
+    treated as ordinary characters instead of backreference escapes — those
+    *would* raise ``re.error: bad escape \\u at position N`` from ``re.sub``
+    otherwise (run #13, 2026-09-04).
     """
-    text = re.sub(r"<Paper Title>", paper.title, text)
+    text = re.sub(r"<Paper Title>", lambda _m: paper.title, text)
 
     basic_block_re = re.compile(r"## 基本信息[\s\S]*?(?=\n## |\Z)", re.MULTILINE)
     block = _basic_info_block(paper, deep=is_deep)
-    text = basic_block_re.sub(block.rstrip("\n"), text, count=1)
+    text = basic_block_re.sub(lambda _m: block.rstrip("\n"), text, count=1)
     return text
 
 
