@@ -86,8 +86,15 @@ def render_manifest(
     by_subtopic: dict[str, list[RenderedPaper]],
     unclassified: list[RenderedPaper],
 ) -> tuple[Path, Path]:
-    """Write manifest.json and manifest.md under ``<output_dir>/<date>``."""
-    day_dir = output_dir / iso_date
+    """Write manifest.json and manifest.md under ``<output_dir>``.
+
+    ``output_dir`` is already the per-day directory (caller builds it as
+    ``<root>/<date>``); we must NOT nest another ``/<date>`` here, otherwise
+    cmd_publish (which reads ``<output_root>/<date>/manifest.md``) can't
+    find it. Run #21 surfaced this as
+    ``FileNotFoundError: .../2026-09-04/manifest.md``.
+    """
+    day_dir = output_dir
     day_dir.mkdir(parents=True, exist_ok=True)
 
     import json
