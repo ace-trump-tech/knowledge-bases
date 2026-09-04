@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 from typing import Iterable
@@ -281,59 +282,91 @@ def cmd_publish(args) -> int:
             continue
 
         branch = f"arxiv-daily/{args.date}"
-        github_pr.create_branch(branch, workdir=kb_local, base=args.base_branch)
 
-        day_root = args.output_root / args.date
-        if not day_root.exists():
-            print(f"[{cfg.name}] no draft for {args.date} at {day_root}", file=sys.stderr)
+        try:
+            github_pr.create_branch(branch, workdir=kb_local, base=args.base_branch)
+
+            day_root = args.output_root / args.date
+            if not day_root.exists():
+                print(f"[{cfg.name}] no draft for {args.date} at {day_root}",
+                      file=sys.stderr)
+                continue
+
+            # Copy every file under <output_root>/<date>/ into
+            # <kb_local>/arxiv-daily/<date>/ so the PR diff stays scoped to the
+            # kb's draft tree (the author later moves files into idea/ by hand).
+            dest_root = kb_local / "arxiv-daily" / args.date
+            files: list[Path] = []
+            for path in day_root.rglob("*"):
+                if path.is_file():
+                    rel = path.relative_to(day_root)
+                    target = dest_root / rel
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(path.read_bytes())
+                    files.append(target)
+
+            if not files:
+                print(f"[{cfg.name}] no files to commit", file=sys.stderr)
+                continue
+
+            github_pr.commit_files(
+                files,
+                message=args.commit_message,
+                workdir=kb_local,
+            )
+            github_pr.push_branch(branch, workdir=kb_local, token=token)
+
+            # Make sure the labels we're about to apply exist on the target repo
+            # (fine-grained PATs often lack admin scope to create repo labels —
+            # `gh label create` returns "already exists" in that case, which we
+            # silently swallow below).
+            github_pr.ensure_labels(
+                repo=cfg.kb_repo, labels=args.label, token=token, workdir=kb_local,
+            )
+
+            title = f"[arxiv-daily] {cfg.name} {args.date}"
+            body = (day_root / "manifest.md").read_text(encoding="utf-8")
+            pr = github_pr.open_or_update_pr(
+                repo=cfg.kb_repo,
+                title=title,
+                body=body,
+                head_branch=branch,
+                base_branch=args.base_branch,
+                draft=True,
+                labels=args.label,
+                token=token,
+                workdir=kb_local,
+            )
+            print(f"[{cfg.name}] PR #{pr.number}: {pr.url}")
+        except subprocess.CalledProcessError as exc:
+            # Surface git/gh stderr so the Actions step log makes it obvious
+            # which command failed (e.g. auth rejection on `git push`, missing
+            # label on `gh pr create`). Don't bail on the first kb — the
+            # remaining two may still succeed.
+            print(
+                f"[{cfg.name}] {exc.cmd[0] if exc.cmd else '?'} failed "
+                f"(rc={exc.returncode}): {(exc.stderr or '').strip()}",
+                file=sys.stderr,
+                flush=True,
+            )
+            _gh_notice(
+                f"arxiv-daily[{cfg.name}]: FAILED "
+                f"cmd={(exc.cmd or [''])[0]} rc={exc.returncode} "
+                f"stderr={(exc.stderr or '').strip()[:400]}"
+            )
+            rc = 1
             continue
-
-        # Copy every file under <output_root>/<date>/ into
-        # <kb_local>/arxiv-daily/<date>/ so the PR diff stays scoped to the
-        # kb's draft tree (the author later moves files into idea/ by hand).
-        dest_root = kb_local / "arxiv-daily" / args.date
-        files: list[Path] = []
-        for path in day_root.rglob("*"):
-            if path.is_file():
-                rel = path.relative_to(day_root)
-                target = dest_root / rel
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes(path.read_bytes())
-                files.append(target)
-
-        if not files:
-            print(f"[{cfg.name}] no files to commit", file=sys.stderr)
+        except Exception as exc:    # noqa: BLE001
+            print(
+                f"[{cfg.name}] {type(exc).__name__}: {exc}",
+                file=sys.stderr,
+                flush=True,
+            )
+            _gh_notice(
+                f"arxiv-daily[{cfg.name}]: FAILED {type(exc).__name__}: {str(exc)[:400]}"
+            )
+            rc = 1
             continue
-
-        github_pr.commit_files(
-            files,
-            message=args.commit_message,
-            workdir=kb_local,
-        )
-        github_pr.push_branch(branch, workdir=kb_local, token=token)
-
-        # Make sure the labels we're about to apply exist on the target repo
-        # (fine-grained PATs often lack admin scope to create repo labels —
-        # `gh label create` returns "already exists" in that case, which we
-        # silently swallow below).
-        github_pr.ensure_labels(
-            repo=cfg.kb_repo, labels=args.label, token=token, workdir=kb_local,
-        )
-
-        title = f"[arxiv-daily] {cfg.name} {args.date}"
-        body = (day_root / "manifest.md").read_text(encoding="utf-8")
-        pr = github_pr.open_or_update_pr(
-            repo=cfg.kb_repo,
-            title=title,
-            body=body,
-            head_branch=branch,
-            base_branch=args.base_branch,
-            draft=True,
-            labels=args.label,
-            token=token,
-            workdir=kb_local,
-        )
-        print(f"[{cfg.name}] PR #{pr.number}: {pr.url}")
     return rc
 
 
