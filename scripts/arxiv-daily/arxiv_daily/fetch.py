@@ -71,7 +71,7 @@ def run_fetch(
         categories=cfg.arxiv_categories,
         submitted_after=datetime.now(tz=timezone.utc)
         - timedelta(hours=cfg.fetch_window_hours),
-        max_results=200,
+        max_results=100,
     )
     LOGGER.info("[%s] fetched %d papers", cfg.name, len(papers))
 
