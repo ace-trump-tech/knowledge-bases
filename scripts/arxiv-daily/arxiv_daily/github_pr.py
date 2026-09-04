@@ -28,6 +28,43 @@ class PRInfo:
     base: str
 
 
+def ensure_labels(
+    *,
+    repo: str,
+    labels: Iterable[str],
+    token: Optional[str] = None,
+    workdir: Optional[Path] = None,
+) -> None:
+    """Create labels on ``repo`` if they don't exist (idempotent).
+
+    Fine-grained PATs without ``administration:write`` scope can't create repo
+    labels via ``gh label create``. We try anyway because the user's token
+    is typically scoped to the kb repos and may include ``issues``-level
+    write; if it does, this is a no-op.
+
+    Failures are logged but never raised — the caller will still attempt the
+    ``gh pr create --label ...`` which fails loudly if a label truly doesn't
+    exist and can't be created.
+    """
+    workdir = workdir or Path.cwd()
+    env = None
+    if token:
+        env = {"GH_TOKEN": token}
+    for label in labels:
+        cmd = ["gh", "label", "create", label, "--repo", repo,
+               "--color", "cccccc", "--description",
+               f"Managed by arxiv-daily pipeline"]
+        try:
+            _run(cmd, env=env, cwd=workdir)
+            LOGGER.info("created label %r on %s", label, repo)
+        except subprocess.CalledProcessError as exc:
+            stderr = (exc.stderr or "").lower()
+            if "already exists" in stderr:
+                continue  # idempotent — label is what we wanted
+            LOGGER.warning("could not create %r on %s: %s", label, repo,
+                           (exc.stderr or "").strip())
+
+
 def open_or_update_pr(
     *,
     repo: str,
@@ -85,26 +122,23 @@ def push_branch(branch: str, *, workdir: Path, token: Optional[str] = None) -> N
 
     The submodule's remote is an unauthenticated ``https://github.com/<org>/<repo>.git``
     URL; the GitHub Actions runner has no global credential helper for it, so
-    without help ``git push`` is rejected with HTTP 403. We embed the token
-    into the push URL for the duration of the call (see
-    https://github.blog/2012/09/21/easier-builds-and-deployments-using-git-over-https-and-oauth/).
+    without help ``git push`` is rejected with HTTP 401/403.
+
+    We install a one-shot credential helper via ``git -c credential.helper=...``
+    so the token never enters the URL itself (avoids quoting issues with
+    fine-grained PATs that may contain ``+`` and ``/``).
     """
     cmd = ["git", "push", "-u", "origin", branch]
-    env = None
     if token:
-        # Rewrite https://github.com/<org>/<repo>.git -> https://x-access-token:<token>@github.com/...
-        # by setting GIT_ASKPASS isn't enough (no prompt); use a one-shot URL rewrite via -c.
-        origin_url = _run(
-            ["git", "remote", "get-url", "origin"], cwd=workdir, check=False
-        ).stdout.strip()
-        if origin_url.startswith("https://github.com/") and "@" not in origin_url:
-            authed = origin_url.replace(
-                "https://github.com/",
-                f"https://x-access-token:{token}@github.com/",
-                1,
-            )
-            cmd = ["git", "push", authed, f"refs/heads/{branch}:refs/heads/{branch}"]
-    _run(cmd, env=env, cwd=workdir)
+        # Inline credential helper: echo user/pass when invoked. Use single
+        # quotes around the password so any token chars survive shell parsing.
+        helper = (
+            f"!f() {{ echo username=x-access-token; echo password='{token}'; }}; f"
+        )
+        cmd = [
+            "git", "-c", f"credential.helper={helper}", "push", "-u", "origin", branch,
+        ]
+    _run(cmd, cwd=workdir)
 
 
 def commit_files(
@@ -202,4 +236,5 @@ def _parse_pr_output(out: subprocess.CompletedProcess, *, head_branch: str, base
     )
 
 
-__all__ = ["PRInfo", "open_or_update_pr", "push_branch", "commit_files", "create_branch"]
+__all__ = ["PRInfo", "open_or_update_pr", "push_branch", "commit_files",
+           "create_branch", "ensure_labels"]

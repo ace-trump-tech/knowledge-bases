@@ -312,6 +312,14 @@ def cmd_publish(args) -> int:
         )
         github_pr.push_branch(branch, workdir=kb_local, token=token)
 
+        # Make sure the labels we're about to apply exist on the target repo
+        # (fine-grained PATs often lack admin scope to create repo labels —
+        # `gh label create` returns "already exists" in that case, which we
+        # silently swallow below).
+        github_pr.ensure_labels(
+            repo=cfg.kb_repo, labels=args.label, token=token, workdir=kb_local,
+        )
+
         title = f"[arxiv-daily] {cfg.name} {args.date}"
         body = (day_root / "manifest.md").read_text(encoding="utf-8")
         pr = github_pr.open_or_update_pr(
