@@ -81,18 +81,30 @@ def open_or_update_pr(
 
 
 def push_branch(branch: str, *, workdir: Path, token: Optional[str] = None) -> None:
-    """Push a local branch to ``origin`` with token auth if provided."""
+    """Push a local branch to ``origin`` with token auth if provided.
+
+    The submodule's remote is an unauthenticated ``https://github.com/<org>/<repo>.git``
+    URL; the GitHub Actions runner has no global credential helper for it, so
+    without help ``git push`` is rejected with HTTP 403. We embed the token
+    into the push URL for the duration of the call (see
+    https://github.blog/2012/09/21/easier-builds-and-deployments-using-git-over-https-and-oauth/).
+    """
+    cmd = ["git", "push", "-u", "origin", branch]
     env = None
     if token:
-        # Use the token only for `origin` of the submodule.
-        # The submodule's remote may not accept $GH_TOKEN directly; rely on the
-        # caller's pre-configured remote.
-        pass
-    _run(
-        ["git", "push", "-u", "origin", branch],
-        env=env,
-        cwd=workdir,
-    )
+        # Rewrite https://github.com/<org>/<repo>.git -> https://x-access-token:<token>@github.com/...
+        # by setting GIT_ASKPASS isn't enough (no prompt); use a one-shot URL rewrite via -c.
+        origin_url = _run(
+            ["git", "remote", "get-url", "origin"], cwd=workdir, check=False
+        ).stdout.strip()
+        if origin_url.startswith("https://github.com/") and "@" not in origin_url:
+            authed = origin_url.replace(
+                "https://github.com/",
+                f"https://x-access-token:{token}@github.com/",
+                1,
+            )
+            cmd = ["git", "push", authed, f"refs/heads/{branch}:refs/heads/{branch}"]
+    _run(cmd, env=env, cwd=workdir)
 
 
 def commit_files(
