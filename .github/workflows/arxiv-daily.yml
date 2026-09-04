@@ -83,7 +83,7 @@ jobs:
             # Actions and the author's local machine.
             ( cd "$kb" && \
               arxiv-daily publish \
-                --config "../scripts/arxiv-daily/config/${kb_name}.yaml" \
+                --config "../../scripts/arxiv-daily/config/${kb_name}.yaml" \
                 --date "$DATE" \
                 --output-root "$OUT" \
                 --base-branch main \
