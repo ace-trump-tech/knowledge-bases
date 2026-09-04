@@ -123,37 +123,30 @@ def push_branch(branch: str, *, workdir: Path, token: Optional[str] = None) -> N
 
     The submodule's remote is an unauthenticated ``https://github.com/<org>/<repo>.git``
     URL; the GitHub Actions runner has no global credential helper for it, so
-    without help ``git push`` is rejected with HTTP 401/403.
+    without help ``git push`` is rejected with HTTP 401/403 (or "terminal
+    prompts disabled" when stdin is closed).
 
-    We write a tiny credential helper to a temp file and point ``git`` at it
-    via ``git -c credential.helper=<path>``. We avoid inline ``!cmd`` syntax
-    because dash rejects ``!f()`` as ``not a valid identifier`` (run #22).
+    We embed the token in the push URL (OAuth basic-auth form). Fine-grained
+    PATs only contain ``[A-Za-z0-9_]`` so the URL is safe to construct
+    without further escaping. Earlier attempts at ``credential.helper``
+    scripts and inline ``!f()`` helpers failed in the Actions runner — dash
+    rejects ``!f()`` and the temp-script approach still had git fall through
+    to the terminal.
     """
-    cmd = ["git", "push", "-u", "origin", branch]
     if token:
-        import tempfile
-
-        fd, helper_path_str = tempfile.mkstemp(prefix="arxiv-helper-", suffix=".sh")
-        try:
-            with os.fdopen(fd, "w", encoding="utf-8") as f:
-                f.write(
-                    "#!/bin/sh\n"
-                    "echo username=x-access-token\n"
-                    f"echo password={token}\n"
-                )
-            os.chmod(helper_path_str, 0o700)
-            cmd = [
-                "git", "-c", f"credential.helper={helper_path_str}",
-                "push", "-u", "origin", branch,
-            ]
+        origin_url = _run(
+            ["git", "remote", "get-url", "origin"], cwd=workdir, check=False
+        ).stdout.strip()
+        if origin_url.startswith("https://github.com/") and "@" not in origin_url:
+            authed = origin_url.replace(
+                "https://github.com/",
+                f"https://x-access-token:{token}@github.com/",
+                1,
+            )
+            cmd = ["git", "push", authed, f"refs/heads/{branch}:refs/heads/{branch}"]
             _run(cmd, cwd=workdir)
-        finally:
-            try:
-                os.unlink(helper_path_str)
-            except OSError:
-                pass
-    else:
-        _run(cmd, cwd=workdir)
+            return
+    _run(["git", "push", "-u", "origin", branch], cwd=workdir)
 
 
 def commit_files(
